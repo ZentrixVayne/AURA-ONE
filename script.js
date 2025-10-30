@@ -33,7 +33,7 @@ const fileInput = document.getElementById('file-input');
 const uploadFileBtn = document.getElementById('upload-file-btn');
 
 // --- API Configuration ---
-const OPENROUTER_API_KEY = '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'; // Your OpenRouter key
+const OPENROUTER_API_KEY = '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'; // Your OpenRouter key
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const SITE_URL = window.location.origin; // Your site URL
 const SITE_NAME = 'AURA ONE'; // Your site name
@@ -148,21 +148,37 @@ document.addEventListener('DOMContentLoaded', () => {
   // Create scroll down button
   createScrollDownButton();
   
+  // Add feature coming soon overlay to image generation button
+  const imageGenBtn = document.querySelector('.tools-popup button:first-child');
+  if (imageGenBtn) {
+    imageGenBtn.classList.add('feature-coming-soon');
+    imageGenBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      showFeatureComingSoonToast('Image generation');
+    });
+  }
+  
   // Simulate loading time
   setTimeout(() => {
-    loadingScreen.classList.add('hidden');
+    // Add fade animation to loading screen
+    loadingScreen.classList.add('loading-screen-fade');
     
     // Check if user name is set
     if (!currentUser.name || currentUser.name === 'Alex') {
-      nameSetupModal.classList.remove('hidden');
-      userNameInput.focus();
+      setTimeout(() => {
+        nameSetupModal.classList.remove('hidden');
+        animateModalIn(nameSetupModal);
+        userNameInput.focus();
+      }, 500);
     } else {
       // Load the most recent chat or start a new one
-      if (chatSessions.length > 0) {
-        loadChat(chatSessions[0].id);
-      } else {
-        startNewChat();
-      }
+      setTimeout(() => {
+        if (chatSessions.length > 0) {
+          loadChat(chatSessions[0].id);
+        } else {
+          startNewChat();
+        }
+      }, 500);
     }
   }, 1500);
 });
@@ -192,16 +208,23 @@ function saveUserName() {
   const name = userNameInput.value.trim();
   if (!name) return;
   
+  // Add button press animation
+  saveNameBtn.classList.add('button-press');
+  setTimeout(() => saveNameBtn.classList.remove('button-press'), 200);
+  
   currentUser.name = name;
   currentUser.initial = name.charAt(0).toUpperCase();
   
   saveUserData();
   updateUserUI();
   
-  nameSetupModal.classList.add('hidden');
-  
-  // Start a new chat after setting the name
-  startNewChat();
+  // Animate modal out
+  animateModalOut(nameSetupModal).then(() => {
+    nameSetupModal.classList.add('hidden');
+    
+    // Start a new chat after setting the name
+    startNewChat();
+  });
 }
 
 function loadChatSessions() {
@@ -224,10 +247,13 @@ function saveChatSessions() {
 function renderChatHistory() {
   chatHistory.innerHTML = '';
   
-  chatSessions.forEach(session => {
+  chatSessions.forEach((session, index) => {
     const chatItem = document.createElement('div');
     chatItem.className = `chat-history-item ${session.id === currentChatId ? 'active' : ''}`;
     chatItem.dataset.chatId = session.id;
+    
+    // Add animation delay for staggered effect
+    chatItem.style.animationDelay = `${index * 0.05}s`;
     
     const titleDiv = document.createElement('div');
     titleDiv.className = 'chat-history-item-title';
@@ -309,6 +335,12 @@ function generateChatId() {
 }
 
 function startNewChat() {
+  // Add button press animation
+  if (event && event.currentTarget) {
+    event.currentTarget.classList.add('button-press');
+    setTimeout(() => event.currentTarget.classList.remove('button-press'), 200);
+  }
+  
   const chatId = generateChatId();
   const newSession = {
     id: chatId,
@@ -457,12 +489,15 @@ function openRenameModal(chatId) {
   chatNameInput.value = session.title;
   renameModal.dataset.chatId = chatId;
   renameModal.classList.remove('hidden');
+  animateModalIn(renameModal);
   chatNameInput.focus();
 }
 
 function closeRenameModal() {
-  renameModal.classList.add('hidden');
-  delete renameModal.dataset.chatId;
+  animateModalOut(renameModal).then(() => {
+    renameModal.classList.add('hidden');
+    delete renameModal.dataset.chatId;
+  });
 }
 
 function saveChatName() {
@@ -471,6 +506,10 @@ function saveChatName() {
   
   const newTitle = chatNameInput.value.trim();
   if (!newTitle) return;
+  
+  // Add button press animation
+  saveRenameBtn.classList.add('button-press');
+  setTimeout(() => saveRenameBtn.classList.remove('button-press'), 200);
   
   const session = chatSessions.find(s => s.id === chatId);
   if (!session) return;
@@ -490,16 +529,23 @@ function saveChatName() {
 function openDeleteModal(chatId) {
   deleteModal.dataset.chatId = chatId;
   deleteModal.classList.remove('hidden');
+  animateModalIn(deleteModal);
 }
 
 function closeDeleteModal() {
-  deleteModal.classList.add('hidden');
-  delete deleteModal.dataset.chatId;
+  animateModalOut(deleteModal).then(() => {
+    deleteModal.classList.add('hidden');
+    delete deleteModal.dataset.chatId;
+  });
 }
 
 function confirmDelete() {
   const chatId = deleteModal.dataset.chatId;
   if (!chatId) return;
+  
+  // Add button press animation
+  confirmDeleteBtn.classList.add('button-press');
+  setTimeout(() => confirmDeleteBtn.classList.remove('button-press'), 200);
   
   const index = chatSessions.findIndex(s => s.id === chatId);
   if (index === -1) return;
@@ -520,8 +566,11 @@ function confirmDelete() {
   closeDeleteModal();
 }
 
-async function generateChatTitle(firstMessage) {
+async function generateChatTitle(conversation) {
   try {
+    // Get the main topic of the conversation, not just the first message
+    const messages = conversation.slice(-5); // Get last 5 messages for context
+    
     const response = await fetch(OPENROUTER_API_URL, {
       method: 'POST',
       headers: {
@@ -535,9 +584,9 @@ async function generateChatTitle(firstMessage) {
         messages: [
           { 
             role: 'system', 
-            content: 'Generate a short, concise title (max 5 words) for a chat that starts with this message. Only return the title, nothing else. Do not include quotes.' 
+            content: 'Generate a short, concise title (max 5 words) for this conversation based on its main topic. Focus on the subject matter, not just the first message. Only return the title, nothing else. Do not include quotes.' 
           },
-          { role: 'user', content: firstMessage }
+          ...messages
         ],
         max_tokens: 20,
         temperature: 0.7
@@ -660,9 +709,9 @@ async function handleSendMessage(e) {
       saveChatSessions();
     }
     
-    // Generate title if this is the first message
+    // Generate title if this is the first message or if title is still "New Chat"
     if (conversationHistory.length === 2 && session.title === 'New Chat') {
-      const generatedTitle = await generateChatTitle(message);
+      const generatedTitle = await generateChatTitle(conversationHistory);
       if (generatedTitle) {
         await updateChatTitle(currentChatId, generatedTitle);
       }
@@ -1233,7 +1282,7 @@ function processFile(file) {
     
     // Generate title if this is the first message
     if (conversationHistory.length === 1 && session.title === 'New Chat') {
-      generateChatTitle(file.name).then(title => {
+      generateChatTitle(conversationHistory).then(title => {
         if (title) {
           updateChatTitle(currentChatId, title);
         }
@@ -1490,3 +1539,50 @@ window.addEventListener('resize', () => {
     overlay.classList.add('hidden');
   }
 });
+
+// Modal animation functions
+function animateModalIn(modal) {
+  const modalContent = modal.querySelector('div');
+  modalContent.classList.remove('scale-95', 'opacity-0');
+  modalContent.classList.add('scale-100', 'opacity-100');
+}
+
+function animateModalOut(modal) {
+  return new Promise(resolve => {
+    const modalContent = modal.querySelector('div');
+    modalContent.classList.remove('scale-100', 'opacity-100');
+    modalContent.classList.add('scale-95', 'opacity-0');
+    
+    setTimeout(() => {
+      resolve();
+    }, 300);
+  });
+}
+
+// Function to show feature coming soon toast
+function showFeatureComingSoonToast(featureName) {
+  const toast = document.createElement('div');
+  toast.className = 'fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 flex items-center gap-2';
+  toast.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12v-.008z" />
+    </svg>
+    <span>${featureName} will be available in the next model update</span>
+  `;
+  document.body.appendChild(toast);
+  
+  // Animate toast in
+  setTimeout(() => {
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateY(0)';
+  }, 10);
+  
+  // Remove toast after 4 seconds
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(10px)';
+    setTimeout(() => {
+      document.body.removeChild(toast);
+    }, 300);
+  }, 4000);
+}
