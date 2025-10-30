@@ -33,7 +33,7 @@ const fileInput = document.getElementById('file-input');
 const uploadFileBtn = document.getElementById('upload-file-btn');
 
 // --- API Configuration ---
-const OPENROUTER_API_KEY = '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'; // Your OpenRouter key
+const OPENROUTER_API_KEY = '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'; // Your OpenRouter key
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const SITE_URL = window.location.origin; // Your site URL
 const SITE_NAME = 'AURA ONE'; // Your site name
@@ -1586,3 +1586,4 @@ function showFeatureComingSoonToast(featureName) {
     }, 300);
   }, 4000);
 }
+
