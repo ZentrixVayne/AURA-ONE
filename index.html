@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURA ONE - Artificial Unified Response Assistant</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💠</text></svg>">
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" class="welcome-screen">
+        <div class="welcome-content">
+            <div class="logo-container">
+                <div class="logo">💠</div>
+                <h1 class="logo-text">AURA ONE</h1>
+            </div>
+            <p class="logo-subtitle">Artificial Unified Response Assistant</p>
+            <div class="loading-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Chat Container -->
+    <div class="chat-container">
+        <!-- Header -->
+        <header class="chat-header">
+            <div class="header-content">
+                <div class="logo-container">
+                    <div class="logo">💠</div>
+                    <h1>AURA ONE</h1>
+                </div>
+                <div class="header-actions">
+                    <button id="new-chat-btn" class="btn-icon" title="New Chat">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 5v14M5 12h14"/>
+                        </svg>
+                    </button>
+                    <button id="search-toggle-btn" class="btn-icon" title="Search">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div id="search-container" class="search-container hidden">
+                <input type="text" id="search-input" placeholder="Search in chat history...">
+                <button id="clear-search-btn" class="btn-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Chat Messages Area -->
+        <main class="chat-messages" id="chat-messages">
+            <div class="message ai-message">
+                <div class="message-content">
+                    <p>Hello! I'm AURA ONE, your AI assistant. How can I help you today?</p>
+                </div>
+                <button class="copy-btn" title="Copy message">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            </div>
+        </main>
+
+        <!-- Typing Indicator -->
+        <div id="typing-indicator" class="typing-indicator hidden">
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <footer class="chat-input-container">
+            <div class="input-wrapper">
+                <textarea id="message-input" placeholder="Type your message here..." rows="1"></textarea>
+                <button id="send-btn" class="send-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </footer>
+
+        <!-- Footer -->
+        <div class="app-footer">
+            <p>⚡ Powered by CodeWithArshman</p>
+            <p>Crafted with 💻 by CodeWithArshman | AURA ONE (Artificial Unified Response Assistant)</p>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification" class="notification hidden">
+        <p id="notification-text"></p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
